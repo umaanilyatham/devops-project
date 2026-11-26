@@ -1,14 +1,12 @@
 
 from flask import Flask, jsonify
+from db import get_db_connection
 
 # Create Flask application
 app = Flask(__name__)
 
 # Sample employee data
-employees = [
-    {"id": 1, "name": "Anil", "role": "Python Developer"},
-    {"id": 2, "name": "Ravi", "role": "DevOps Engineer"}
-]
+
 
 # Health check API
 @app.route("/health", methods=["GET"])
@@ -18,6 +16,12 @@ def health():
 # Get all employees
 @app.route("/employees", methods=["GET"])
 def get_employees():
+    connection=get_db_connection()
+    cursor=connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM employees")
+    employees=cursor.fetchall()
+    cursor.close()
+    connection.close()
     return jsonify(employees)
 
 # Start Flask server
